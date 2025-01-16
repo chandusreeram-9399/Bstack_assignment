@@ -22,15 +22,21 @@ python -m venv env
 ```
 env\Scripts\activate 
 
-```
+
 ## API
 ```
-url = "https://rapid-translate-multi-traduction.p.rapidapi.com/t"
-headers = {
+*url = "https://rapid-translate-multi-traduction.p.rapidapi.com/t"
+```
+*headers = {
+```
     "x-rapidapi-key": "API_KEY",
+    ```
     "x-rapidapi-host": "rapid-translate-multi-traduction.p.rapidapi.com",
+    ```
     "Content-Type": "application/json "
+```
 }
+
 
 ## Set BrowserStack Credentials
 * Add your BrowserStack username and access key in the `browserstack.yml` config fle.
