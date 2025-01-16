@@ -20,7 +20,7 @@ import os
 # Your translation API setup
 url = "https://rapid-translate-multi-traduction.p.rapidapi.com/t"
 headers = {
-    "x-rapidapi-key": "27e5dd421emshed3300e6543ac79p1d1807jsn0520497fb758",
+    "x-rapidapi-key": "c2765ed103mshc8e74af76f11630p1c2bc0jsn13c6b6ce1b63",
     "x-rapidapi-host": "rapid-translate-multi-traduction.p.rapidapi.com",
     "Content-Type": "application/json "
 }
