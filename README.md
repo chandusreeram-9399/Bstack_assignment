@@ -48,7 +48,7 @@ BROWSERSTACK_ACCESS_KEY=<browserstack-access-key>
 * Run sample test:
   - To run the sample test across platforms defined in the `browserstack.yml` file, run:
     ```
-    browserstack-sdk ./tests/test.py
+    browserstack-sdk ./tests/remote_test.py
     ```
   
   - To run the script on your local machine or any editor:
