@@ -5,17 +5,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 import time
-
 import requests
 from collections import Counter
 import re
-
 import os
-# The webdriver management will be handled by the browserstack-sdk
-# so this will be overridden and tests will run browserstack -
-# without any changes to the test files!
-
-
 
 # Your translation API setup
 url = "https://rapid-translate-multi-traduction.p.rapidapi.com/t"
@@ -89,61 +82,53 @@ def clean_and_tokenize(text):
     return words
 
 # Initialize the driver
-
-
-
 try:
     driver.maximize_window()
     driver.get("https://elpais.com/")
-
-
-    # print("placeholder")
-
-    # wait for page to load
-    # wait.until(lambda driver:driver.execute_script('return document.readyState')=='complete')
+    
+    # Wait for page to load
     time.sleep(5)
 
     # ****************** check if language is spanish
-    lang_attr=driver.find_element(By.TAG_NAME,'html').get_attribute('lang')
+    lang_attr = driver.find_element(By.TAG_NAME, 'html').get_attribute('lang')
     if 'es' in lang_attr:
         print('language is spanish')
+        driver.execute_script(
+            'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed", "reason": "Language is Spanish"}}'
+        )
     else:
         print(f'language is {lang_attr}')
+        driver.execute_script(
+            'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed", "reason": "Language is not Spanish"}}'
+        )
 
     # accept something (don't know the spanish language)
-    accept_button=wait.until(EC.element_to_be_clickable((By.ID,'didomi-notice-agree-button')))
+    accept_button = wait.until(EC.element_to_be_clickable((By.ID, 'didomi-notice-agree-button')))
     accept_button.click()
     
     # go to opinions page
-    opinion_button= wait.until(EC.element_to_be_clickable((By.XPATH,'//a[@data-mrf-link="https://elpais.com/opinion/"]')))
+    opinion_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//a[@data-mrf-link="https://elpais.com/opinion/"]')))
     opinion_button.click()
 
     # wait for page to load
-    # wait.until(lambda driver:driver.execute_script('return document.readyState')=='interactive')
     time.sleep(5)
 
-    # driver.execute_script("return document.readyState;") ### check this
-    # wait for page to load
-
     # get main element in which articles are present
-    opinion_section=wait.until(EC.visibility_of_element_located((By.XPATH,'//section[@data-dtm-region="portada_apertura"]')))
-    articles=opinion_section.find_elements(By.TAG_NAME,'article') # if less than 5, then add more from somewhere
-    articles=articles[:5] if len(articles)>5 else articles
-    # articles=articles[:5]
-    # print(len(articles))
+    opinion_section = wait.until(EC.visibility_of_element_located((By.XPATH, '//section[@data-dtm-region="portada_apertura"]')))
+    articles = opinion_section.find_elements(By.TAG_NAME, 'article')  # if less than 5, then add more from somewhere
+    articles = articles[:5] if len(articles) > 5 else articles
 
+    tc_dict = {}
 
-    tc_dict={}
-
-    img_scr_list=[]
+    img_scr_list = []
 
     for article in articles:
-        title=article.find_element(By.XPATH, './/h2').text
-        content=article.find_element(By.XPATH, './/p').text
-        tc_dict[title]=content
+        title = article.find_element(By.XPATH, './/h2').text
+        content = article.find_element(By.XPATH, './/p').text
+        tc_dict[title] = content
 
         try:
-            img_scr=article.find_element(By.TAG_NAME,'img').get_attribute('srcset')
+            img_scr = article.find_element(By.TAG_NAME, 'img').get_attribute('srcset')
             if img_scr:
                 img_scr_list.append(get_best_image_url(img_scr))
         except Exception as e:
@@ -152,10 +137,7 @@ try:
 
     print(tc_dict)
     print(len(img_scr_list))
-    print(f"total number of images:{img_scr_list}")
-
-    # tc_dict.keys()
-    print("------------------>>>>>>>>>>>>>>>>------WELCOME-------------------------<<<<<<<<<<<<<<---------------------------------------")
+    print(f"total number of images: {img_scr_list}")
 
     # Step 1: Translate titles and store them
     translated_titles = []
@@ -167,8 +149,6 @@ try:
             print(f"Failed to translate title: {title}")
 
     print(translated_titles)
-
-    # code test start
 
     # Step 2: Tokenize and count word occurrences across all translated titles
     all_words = []
@@ -185,25 +165,17 @@ try:
 
     print("Repeated words (appearing more than twice):")
     for word, count in repeated_words.items():
-        print(f"{word} has occured for: {count}  times" )
+        print(f"{word} has occurred {count} times")
 
-
-
-    # code test end
-
-
-
-    # download cover image
-
+    # Download cover image
     for url in img_scr_list:
         download_image(url)
 
-    #####################
-
-    # time.sleep(5)
+    # Set session status to passed after completing the test steps
+    driver.execute_script(
+        'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed", "reason": "Test ran successfully"}}'
+    )
 
 finally:
     # Close the browser
     driver.quit()
-
-
