@@ -9,7 +9,7 @@ python3 should be installed
 ## Setup
 * Clone the repo
 ```
-git clone https://github.com/chandusreeram-9399/.git
+git clone https://github.com/chandusreeram-9399/Bstack_assignment.git
 ```
 
 * Install packages through requirements.txt
